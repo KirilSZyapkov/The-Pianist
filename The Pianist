@@ -1,0 +1,61 @@
+function thePianist(input) {
+    let count = input.shift();
+    let listOfSongs = {};
+    let line;
+    let action = {
+        Add(piece, composer, key) {
+            if (!listOfSongs.hasOwnProperty(piece)) {
+                listOfSongs[piece] = {
+                    [key]: composer
+                };
+                console.log(`${piece} by ${composer} in ${key} added to the collection!`);
+            } else {
+                console.log(`${piece} is already in the collection!`);
+            }
+        },
+        Remove(piece) {
+            if (listOfSongs.hasOwnProperty(piece)) {
+                delete listOfSongs[piece];
+                console.log(`Successfully removed ${piece}!`);
+            } else {
+                console.log(`Invalid operation! ${piece} does not exist in the collection.`);
+            }
+
+        },
+        ChangeKey(piece, newKey) {
+            if (listOfSongs.hasOwnProperty(piece)) {
+                let token = Object.entries(listOfSongs[piece]);
+                token[0][0] = newKey;
+                listOfSongs[piece] = {
+                    [token[0][0]]: token[0][1],
+                };
+                console.log(`Changed the key of ${piece} to ${newKey}!`);
+            } else {
+                console.log(`Invalid operation! ${piece} does not exist in the collection.`);
+            }
+        }
+    };
+    for (let a = 0; a < count; a++) {
+        let [piece, composer, key] = input.shift().split(`|`);
+        if (!listOfSongs.hasOwnProperty(piece)) {
+            listOfSongs[piece] = {
+                [key]: composer
+            };
+        }
+    }
+    while ((line = input.shift()) !== "Stop") {
+        let [comand, ...params] = line.split(`|`);
+        action[comand](...params);
+    }
+    let sorted = Object.entries(listOfSongs);
+    sorted.sort((a, b) => {
+        let [nameA, nameCompA] = a;
+        let [nameB, nameCompB] = b;
+        return nameA.localeCompare(nameB) || Object.values(nameCompA).localeCompare(Object.values(nameCompB));
+    })
+    sorted.forEach(element=>{
+        let [piece,inf]=element;
+        let [list] = Object.entries(inf)
+        console.log(`${piece} -> Composer: ${list[1]}, Key: ${list[0]}`);
+    });
+}
